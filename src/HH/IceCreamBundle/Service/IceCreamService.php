@@ -3,28 +3,32 @@
 namespace HH\IceCreamBundle\Service;
 
 use Doctrine\ORM\EntityManager;
+use HH\ApiBundle\Entity\EventsLog;
 use HH\IceCreamBundle\Entity\IceCream;
 use Symfony\Component\HttpFoundation\Request;
-use DateTime as DateTime;
 
 class IceCreamService
 {
 
     /** @var EntityManager */
     private $entityManager;
+    /** @var EventsLog */
+    private $eventsLog;
 
+    /**
+     * @param EntityManager $manager
+     */
     public function __construct(EntityManager $manager)
     {
         $this->entityManager = $manager;
     }
 
-// {"time":{"sec":1398619851,"usec":844563},"deviceId":"iceCream_1","type":"IceCream","data":{"userId":123,"amount":3}}
-    public function IceCream(IceCream $iceCreamEntity, $data)
+    /**
+     * @param EventsLog $eventsLog
+     */
+    public function setEventsLog(EventsLog $eventsLog = null)
     {
-        // @todo: implement this, possible wrong ex.
-        $iceCreamEntity->setAmount($data['amount'])
-            ->setUserId($data['userId']);
-
+        $this->eventsLog = $eventsLog;
     }
 
     /**
@@ -36,11 +40,6 @@ class IceCreamService
     {
         $data = $request->get('data');
 
-        date_default_timezone_set('Europe/Vilnius');
-        $date = new DateTime();
-        $time = $request->get('time');
-        $timestamp = $date->setTimestamp($time['sec']);
-
         $iceCreamEntity = new IceCream();
         switch ($type) {
             case "IceCream" :
@@ -49,7 +48,6 @@ class IceCreamService
             default:
                 return;
         }
-        $iceCreamEntity->setTimestamp($timestamp);
         if (!preg_match("/(\d+)/", $device, $matches)) {
             return;
         }
@@ -60,5 +58,22 @@ class IceCreamService
         $em->persist($iceCreamEntity);
         $em->flush();
         // @todo: here can be dispatched user event, recalculate amount
+        // @todo: dispatch mark as processed
+//        /** @var EventsLogService $eventService */
+//        $eventService = $this->get('api.events_log_service');
+//        $eventService->markAsProcessed();
+    }
+
+// {"time":{"sec":1398619851,"usec":844563},"deviceId":"iceCream_1","type":"IceCream","data":{"userId":123,"amount":3}}
+    /**
+     * @param IceCream $iceCreamEntity
+     * @param $data
+     */
+    public function IceCream(IceCream $iceCreamEntity, $data)
+    {
+        $timestamp = $this->eventsLog->getTimestamp();
+        $iceCreamEntity->setTimestamp($timestamp);
+        $iceCreamEntity->setAmount($data['amount'])
+            ->setUserId($data['userId']);
     }
 } 

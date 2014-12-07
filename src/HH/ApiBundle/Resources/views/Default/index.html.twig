@@ -10,7 +10,7 @@ var $dataArr = [
 for (var $i = 0; $i < $dataArr.length; $i++) {
     $.ajax({
             type: "POST",
-            url: $host + "/HH/web/ajax/",
+            url: $host + "/HH/web/api/v2/event",
             data: $dataArr[$i]
         }).done(function($msg) {
             console.log("Got response: " + JSON.stringify($msg));

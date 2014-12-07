@@ -2,6 +2,8 @@
 
 namespace HH\SoccerMatchBundle\EventListener;
 
+use HH\ApiBundle\Entity\EventsLog;
+use HH\ApiBundle\Service\EventsLogService;
 use HH\SoccerMatchBundle\Service\SoccerMatchService;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpFoundation\Request;
@@ -9,16 +11,25 @@ use Symfony\Component\HttpKernel\Event\PostResponseEvent;
 
 class SoccerMatchListener
 {
-    /**
-     * @var Container
-     */
+    /** @var Container */
     private $container;
+    /** @var EventsLog */
+    private $lastEvent;
 
+    /**
+     * @param Container $container
+     */
     public function __construct(Container $container)
     {
         $this->container = $container;
+        /** @var EventsLogService $event */
+        $event = $this->container->get('api.events_log_service');
+        $this->lastEvent = $event->getLastEvent();
     }
 
+    /**
+     * @param PostResponseEvent $event
+     */
     public function onTerminate(PostResponseEvent $event)
     {
         /** @var Request $request */
@@ -37,6 +48,9 @@ class SoccerMatchListener
      */
     private function getSoccerMatchService()
     {
-        return $this->container->get('hh_soccer_match.soccer_match_service');
+        /** @var SoccerMatchService $soccerMatchService */
+        $soccerMatchService = $this->container->get('hh_soccer_match.soccer_match_service');
+        $soccerMatchService->setEventsLog($this->lastEvent);
+        return $soccerMatchService;
     }
 }

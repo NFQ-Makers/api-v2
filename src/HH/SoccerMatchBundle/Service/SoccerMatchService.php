@@ -3,6 +3,7 @@
 namespace HH\SoccerMatchBundle\Service;
 
 use Doctrine\ORM\EntityManager;
+use HH\ApiBundle\Entity\EventsLog;
 use HH\SoccerMatchBundle\Entity\SoccerMatch;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -11,36 +12,23 @@ class SoccerMatchService
 
     /** @var EntityManager */
     private $entityManager;
+    /** @var EventsLog */
+    private $eventsLog;
 
+    /**
+     * @param EntityManager $manager
+     */
     public function __construct(EntityManager $manager)
     {
         $this->entityManager = $manager;
     }
 
-    // {"time":{"sec":1398619851,"usec":844563},"deviceId":"table_1","type":"TableShake","data":{}},
-    public function TableShake(SoccerMatch $soccerEntity, $time)
+    /**
+     * @param EventsLog $eventsLog
+     */
+    public function setEventsLog(EventsLog $eventsLog = null)
     {
-        // @todo: implement this, possible wrong ex.
-        $soccerEntity->setLastShake($time);
-    }
-
-    // {"time":{"sec":1398619851,"usec":846044},"deviceId":"table_1","type":"AutoGoal","data":{"team":1}},
-    public function AutoGoal(SoccerMatch $soccerEntity, $data)
-    {
-        // @todo: implement this, possible wrong ex.
-        if ($data['team'] == 1) {
-            $soccerEntity->setTeamResult1(1);
-            $soccerEntity->setTeamResult2(0);
-        } else {
-            $soccerEntity->setTeamResult1(0);
-            $soccerEntity->setTeamResult2(1);
-        }
-    }
-
-    // {"time":{"sec":1398619851,"usec":847409},"deviceId":"table_1","type":"CardSwipe","data":{"team":0,"player":1,"card_id":123456789}},
-    public function CardSwipe(SoccerMatch $soccerEntity, $data)
-    {
-        // @todo: implement this
+        $this->eventsLog = $eventsLog;
     }
 
     /**
@@ -94,5 +82,31 @@ class SoccerMatchService
         $em = $this->entityManager;
         $em->persist($soccerEntity);
         $em->flush();
+    }
+
+    // {"time":{"sec":1398619851,"usec":844563},"deviceId":"table_1","type":"TableShake","data":{}},
+    public function TableShake(SoccerMatch $soccerEntity, $time)
+    {
+        // @todo: implement this, possible wrong ex.
+        $soccerEntity->setLastShake($time);
+    }
+
+    // {"time":{"sec":1398619851,"usec":846044},"deviceId":"table_1","type":"AutoGoal","data":{"team":1}},
+    public function AutoGoal(SoccerMatch $soccerEntity, $data)
+    {
+        // @todo: implement this, possible wrong ex.
+        if ($data['team'] == 1) {
+            $soccerEntity->setTeamResult1(1);
+            $soccerEntity->setTeamResult2(0);
+        } else {
+            $soccerEntity->setTeamResult1(0);
+            $soccerEntity->setTeamResult2(1);
+        }
+    }
+
+    // {"time":{"sec":1398619851,"usec":847409},"deviceId":"table_1","type":"CardSwipe","data":{"team":0,"player":1,"card_id":123456789}},
+    public function CardSwipe(SoccerMatch $soccerEntity, $data)
+    {
+        // @todo: implement this
     }
 } 

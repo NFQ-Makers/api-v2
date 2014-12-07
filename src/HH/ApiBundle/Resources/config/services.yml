@@ -5,3 +5,7 @@ services:
 #    api.example:
 #        class: %api.example.class%
 #        arguments: [@service_id, "plain_value", %parameter%]
+
+    api.events_log_service:
+        class: HH\ApiBundle\Service\EventsLogService
+        arguments: [ "@doctrine.orm.entity_manager" ]

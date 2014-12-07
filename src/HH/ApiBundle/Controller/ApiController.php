@@ -3,6 +3,7 @@
 namespace HH\ApiBundle\Controller;
 
 use HH\ApiBundle\Entity\EventsLog;
+use HH\ApiBundle\Service\EventsLogService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -12,18 +13,18 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use \DateTime as DateTime;
 
 /**
- * @Route("/ajax")
+ * @Route("/api/v2")
  */
 class ApiController extends Controller
 {
     /**
-     * @Route ("/documentation")
+     * @Route ("/")
      * @Method ("GET")
      *
      * @param Request $request
      * @return JsonResponse
      */
-    public function documentationAction(Request $request)
+    public function indexAction(Request $request)
     {
         //@todo: remove either change. Currently render index with jquery, to test api calls
         return $this->render('ApiBundle:Default:index.html.twig');
@@ -37,21 +38,20 @@ class ApiController extends Controller
     //         {"time":{"sec":1398619851,"usec":844563},"deviceId":"iceCream_1","type":"IceCream","data":{"userId":123,"amount":3}}
     //     ]
     /**
-     * @Route ("/")
+     * @Route ("/event")
      * @Method ("POST")
      *
      * @param Request $request
      * @return JsonResponse
      */
-    public function indexAction(Request $request)
+    public function eventAction(Request $request)
     {
         if (!$data = $request->request->all()) {
             return new JsonResponse(array("status" => "error", "message" => "bad request"), 400);
         }
         date_default_timezone_set('Europe/Vilnius');
-        $date = new DateTime();
+        $timestamp = new DateTime('now');
         $time = $request->get('time');
-        $timestamp = $date->setTimestamp($time['sec']);
 
         $deviceId = $request->get('deviceId');
         $type = $request->get('type');
@@ -61,7 +61,7 @@ class ApiController extends Controller
         //@todo: set processed on kernel.terminate
         $event->setDeviceId($deviceId)
             ->setData($data)
-            ->setDeviceTime($time['usec'])
+            ->setDeviceTime($time['sec'])
             ->setProcessed(false)
             ->setTimestamp($timestamp)
             ->setType($type);
@@ -69,6 +69,9 @@ class ApiController extends Controller
         $em = $this->getDoctrine()->getManager();
         $em->persist($event);
         $em->flush();
+        /** @var EventsLogService $eventService */
+        $eventService = $this->container->get('api.events_log_service');
+        $eventService->setLastEvent($event);
 
         $responseData = array("status" => "ok");
         $headers = array("X-TableEventStored" => "1");
