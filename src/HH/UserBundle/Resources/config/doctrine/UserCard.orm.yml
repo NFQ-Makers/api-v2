@@ -1,0 +1,43 @@
+HH\UserBundle\Entity\UserCard:
+    type: entity
+    table: user_card
+    indexes:
+        CardNumber:
+            columns:
+                - cardNumber
+        UserId:
+            columns:
+                - userId
+    id:
+        cardid:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ''
+            id: true
+            column: cardId
+            generator:
+                strategy: IDENTITY
+    fields:
+        userid:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ''
+            column: userId
+        cardnumber:
+            type: integer
+            nullable: false
+            unsigned: true
+            comment: ''
+            default: '0'
+            column: cardNumber
+        cardvalue:
+            type: string
+            nullable: false
+            length: 21
+            fixed: false
+            comment: ''
+            default: ''
+            column: cardValue
+    lifecycleCallbacks: {  }

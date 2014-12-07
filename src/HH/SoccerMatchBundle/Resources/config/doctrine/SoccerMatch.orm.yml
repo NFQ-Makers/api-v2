@@ -1,0 +1,63 @@
+HH\SoccerMatchBundle\Entity\SoccerMatch:
+    type: entity
+    table: soccer_match
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ''
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        teamid1:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ''
+            column: teamId1
+        teamid2:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ''
+            column: teamId2
+        teamresult1:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ''
+            column: teamResult1
+        teamresult2:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ''
+            column: teamResult2
+        starttime:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ''
+            column: startTime
+        lastshake:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ''
+            column: lastShake
+        deviceid:
+            type: string
+            nullable: false
+            length: 255
+            fixed: false
+            comment: ''
+            column: deviceId
+        status:
+            type: string
+            nullable: false
+            length: 255
+            fixed: false
+            comment: ''
+    lifecycleCallbacks: {  }

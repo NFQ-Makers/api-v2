@@ -1,0 +1,31 @@
+HH\UserBundle\Entity\User:
+    type: entity
+    table: user
+    id:
+        userid:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ''
+            id: true
+            column: userId
+            generator:
+                strategy: IDENTITY
+    fields:
+        firstname:
+            type: string
+            nullable: false
+            length: 20
+            fixed: false
+            comment: ''
+            default: ''
+            column: firstName
+        lastname:
+            type: string
+            nullable: false
+            length: 30
+            fixed: false
+            comment: ''
+            default: ''
+            column: lastName
+    lifecycleCallbacks: {  }

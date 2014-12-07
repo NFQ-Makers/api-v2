@@ -1,0 +1,16 @@
+parameters:
+#    ice_cream.example.class: HH\IceCreamBundle\Example
+
+services:
+#    ice_cream.example:
+#        class: %ice_cream.example.class%
+#        arguments: [@service_id, "plain_value", %parameter%]
+    hh_ice_cream.parse_request_data_listener:
+        class: HH\IceCreamBundle\EventListener\IceCreamListener
+        arguments: [ "@service_container" ]
+        tags:
+          - { name: kernel.event_listener, event: kernel.terminate, method: onTerminate }
+
+    hh_ice_cream.ice_cream_service:
+        class: HH\IceCreamBundle\Service\IceCreamService
+        arguments: [ "@doctrine.orm.entity_manager" ]

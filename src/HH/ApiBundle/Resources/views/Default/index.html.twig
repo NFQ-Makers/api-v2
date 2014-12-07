@@ -1,0 +1,24 @@
+This page has jQuery! <br> Usage:
+<pre>
+var $host = "http://localhost";
+var $dataArr = [
+    {"time":{"sec":1398619851,"usec":844563},"deviceId":"table_1","type":"TableShake","data":{}},
+    {"time":{"sec":1398619851,"usec":846044},"deviceId":"table_1","type":"AutoGoal","data":{"team":1}},
+    {"time":{"sec":1398619851,"usec":847409},"deviceId":"table_1","type":"CardSwipe","data":{"team":0,"player":1,"card_id":123456789}},
+    {"time":{"sec":1398619851,"usec":844563},"deviceId":"iceCream_1","type":"IceCream","data":{"userId":123,"amount":3}}
+];
+for (var $i = 0; $i < $dataArr.length; $i++) {
+    $.ajax({
+            type: "POST",
+            url: $host + "/HH/web/ajax/",
+            data: $dataArr[$i]
+        }).done(function($msg) {
+            console.log("Got response: " + JSON.stringify($msg));
+        })
+        .fail(function() {
+            console.log("error");
+        });
+}
+</pre>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
