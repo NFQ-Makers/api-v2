@@ -8,6 +8,7 @@ use HH\ApiBundle\Event\DeviceRequest;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\Validator\Exception\ValidatorException;
 
 class RequestManager
 {
@@ -15,6 +16,10 @@ class RequestManager
     private $entityManager;
     /** @var EventDispatcherInterface */
     protected $dispatcher;
+    const REQUEST_TYPE_TABLE_SHAKE = 'TableShake';
+    const REQUEST_TYPE_AUTO_GOAL = 'AutoGoal';
+    const REQUEST_TYPE_CARD_SWIPE = 'CardSwipe';
+    const REQUEST_TYPE_ICE_CREAM = 'IceCream';
 
     /**
      * @param EntityManager $manager
@@ -24,33 +29,118 @@ class RequestManager
         $this->entityManager = $manager;
     }
 
+    /**
+     * @param Request $request
+     * @param $timestamp
+     * @return array
+     */
     public function processRequest(Request $request, $timestamp)
     {
-        $time = $request->get('time');
+        $eventEntity = new EventsLog();
+        $eventEntity->setTimestamp($timestamp);
+        try {
+            $this->parseFromRequest($request, $eventEntity);
+        } catch (\Exception $e) {
+            return array("status" => "fail");
+        }
 
+        $em = $this->entityManager;
+        $em->persist($eventEntity);
+        $em->flush();
+
+        $deviceRequestEvent = new DeviceRequest();
+        $deviceRequestEvent->setLog($eventEntity);
+        $this->dispatcher->dispatch(KernelEvents::TERMINATE, $deviceRequestEvent);
+
+        return array("status" => "ok");
+    }
+
+    /**
+     * @param Request $request
+     * @param EventsLog $eventEntity
+     */
+    private function parseFromRequest(Request $request, EventsLog $eventEntity)
+    {
+        $time = $request->get('time');
         $deviceId = $request->get('deviceId');
         $type = $request->get('type');
         $data = $request->get('data');
-
-        $event = new EventsLog();
+        $this->validateTime($time);
+        $this->validateDeviceId($deviceId);
+        $this->validateType($type);
+        $this->validateData($data);
 
         //@todo: set processed on kernel.terminate
-        $event->setDeviceId($deviceId)
+        $eventEntity->setDeviceId($deviceId)
             ->setData($data)
             ->setDeviceTime($time['sec'])
             ->setProcessed(false)
-            ->setTimestamp($timestamp)
             ->setType($type);
+    }
 
-        $em = $this->entityManager;
-        $em->persist($event);
-        $em->flush();
+    /**
+     * @param array $time
+     * @return bool
+     * @todo: move to validator
+     */
+    private function validateTime(array $time)
+    {
+        if (!isset($time)) {
+            throw new ValidatorException();
+        }
+        if (!isset($time['sec']) || !isset($time['usec'])) {
+            throw new ValidatorException();
+        }
+        return true;
+    }
 
-        $realEvent = new DeviceRequest();
-        $realEvent->setLog($event);
-        $this->dispatcher->dispatch(KernelEvents::TERMINATE, $realEvent);
+    /**
+     * @param $deviceId
+     * @return bool
+     * @todo: move to validator
+     */
+    private function validateDeviceId($deviceId)
+    {
+        if (!isset($deviceId)) {
+            throw new ValidatorException();
+        }
+        if (strlen($deviceId) <= 0) {
+            throw new ValidatorException();
+        }
+        return true;
+    }
 
-        return array("status" => "ok");
+    /**
+     * @param $type
+     * @return bool
+     * @todo: move to validator
+     */
+    private function validateType($type)
+    {
+        if (!isset($type)) {
+            throw new ValidatorException();
+        }
+        if (strlen($type) <= 0) {
+            throw new ValidatorException();
+        }
+        $types = array(
+            self::REQUEST_TYPE_TABLE_SHAKE,
+            self::REQUEST_TYPE_AUTO_GOAL,
+            self::REQUEST_TYPE_CARD_SWIPE,
+            self::REQUEST_TYPE_ICE_CREAM,
+        );
+        if (!in_array($type, $types)) {
+            throw new ValidatorException();
+        }
+        return true;
+    }
+
+    /**
+     * @param $data
+     * @todo: move to validator
+     */
+    private function validateData($data)
+    {
     }
 
     /**

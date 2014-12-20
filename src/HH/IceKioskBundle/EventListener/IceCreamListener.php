@@ -2,19 +2,15 @@
 
 namespace HH\IceKioskBundle\EventListener;
 
-use HH\ApiBundle\Entity\EventsLog;
-use HH\ApiBundle\Service\EventsLogService;
+use HH\ApiBundle\Event\DeviceRequest;
+use HH\ApiBundle\EventListener\ApiTerminateInterface;
 use HH\IceKioskBundle\Service\IceCreamService;
 use Symfony\Component\DependencyInjection\Container;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Event\PostResponseEvent;
 
-class IceKioskListener
+class IceKioskListener implements ApiTerminateInterface
 {
     /** @var Container */
     private $container;
-    /** @var EventsLog */
-    private $lastEvent;
 
     /**
      * @param Container $container
@@ -22,25 +18,21 @@ class IceKioskListener
     public function __construct(Container $container)
     {
         $this->container = $container;
-        /** @var EventsLogService $event */
-        $event = $this->container->get('api.events_log_service');
-        $this->lastEvent = $event->getLastEvent();
     }
 
     /**
-     * @param PostResponseEvent $event
+     * @param DeviceRequest $event
      */
-    public function onTerminate(PostResponseEvent $event)
+    public function onTerminate(DeviceRequest $event)
     {
-        /** @var Request $request */
         $request = $event->getLog();
-        $device = $request->get('deviceId');
+        $device = $request->getDeviceId();
         if ($device !== 'iceCream_1') {
             return;
         }
-        $IceCreamService = $this->getIceCreamService();
-        $type = $request->get('type');
-        $this->iceCreamService->processIceCream($request, $type, $device);
+        $iceCreamService = $this->getIceCreamService();
+        $type = $request->getType();
+        $iceCreamService->processIceCream($request, $type, $device);
     }
 
     /**
@@ -48,12 +40,8 @@ class IceKioskListener
      */
     private function getIceCreamService()
     {
-        $this->iceCreamService->setEventsLog($this->lastEvent);
+        /** @var IceCreamService $iceCreamService */
+        $iceCreamService = $this->container->get('ice_kiosk.ice_cream_service');
         return $iceCreamService;
-    }
-
-    public function setIceCreamService($service){
-        $this->iceCreamService = $service;
-
     }
 }

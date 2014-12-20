@@ -5,15 +5,12 @@ namespace HH\IceKioskBundle\Service;
 use Doctrine\ORM\EntityManager;
 use HH\ApiBundle\Entity\EventsLog;
 use HH\IceKioskBundle\Entity\IceCream;
-use Symfony\Component\HttpFoundation\Request;
 
 class IceCreamService
 {
 
     /** @var EntityManager */
     private $entityManager;
-    /** @var EventsLog */
-    private $eventsLog;
 
     /**
      * @param EntityManager $manager
@@ -24,26 +21,18 @@ class IceCreamService
     }
 
     /**
-     * @param EventsLog $eventsLog
-     */
-    public function setEventsLog(EventsLog $eventsLog = null)
-    {
-        $this->eventsLog = $eventsLog;
-    }
-
-    /**
-     * @param Request $request
+     * @param EventsLog $request
      * @param string $type
      * @param string $device
      */
-    public function processIceCream(Request $request, $type, $device)
+    public function processIceCream(EventsLog $request, $type, $device)
     {
-        $data = $request->get('data');
+        $data = $request->getData();
 
         $iceCreamEntity = new IceCream();
         switch ($type) {
             case "IceCream" :
-                $this->IceCream($iceCreamEntity, $data);
+                $this->IceCream($iceCreamEntity, $request, $data);
                 break;
             default:
                 return;
@@ -67,11 +56,12 @@ class IceCreamService
 // {"time":{"sec":1398619851,"usec":844563},"deviceId":"iceCream_1","type":"IceCream","data":{"userId":123,"amount":3}}
     /**
      * @param IceCream $iceCreamEntity
+     * @param EventsLog $eventsLog
      * @param $data
      */
-    public function IceCream(IceCream $iceCreamEntity, $data)
+    public function IceCream(IceCream $iceCreamEntity, EventsLog $eventsLog, $data)
     {
-        $timestamp = $this->eventsLog->getTimestamp();
+        $timestamp = $eventsLog->getTimestamp();
         $iceCreamEntity->setTimestamp($timestamp);
         $iceCreamEntity->setAmount($data['amount'])
             ->setUserId($data['userId']);

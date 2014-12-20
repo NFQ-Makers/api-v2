@@ -2,19 +2,15 @@
 
 namespace HH\KickerTableBundle\EventListener;
 
-use HH\ApiBundle\Entity\EventsLog;
-use HH\ApiBundle\Service\EventsLogService;
+use HH\ApiBundle\Event\DeviceRequest;
+use HH\ApiBundle\EventListener\ApiTerminateInterface;
 use HH\KickerTableBundle\Service\SoccerMatchService;
 use Symfony\Component\DependencyInjection\Container;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Event\PostResponseEvent;
 
-class SoccerMatchListener
+class SoccerMatchListener implements ApiTerminateInterface
 {
     /** @var Container */
     private $container;
-    /** @var EventsLog */
-    private $lastEvent;
 
     /**
      * @param Container $container
@@ -22,25 +18,20 @@ class SoccerMatchListener
     public function __construct(Container $container)
     {
         $this->container = $container;
-        /** @var EventsLogService $event */
-        $event = $this->container->get('api.events_log_service');
-        $this->lastEvent = $event->getLastEvent();
     }
 
     /**
-     * @param PostResponseEvent $event
+     * @param DeviceRequest $event
      */
-    public function onTerminate(PostResponseEvent $event)
+    public function onTerminate(DeviceRequest $event)
     {
-        /** @var Request $request */
         $request = $event->getLog();
-        $request = $event->getRequest();
-        $device = $request->get('deviceId');
+        $device = $request->getDeviceId();
         if ($device !== 'table_1') {
             return;
         }
         $soccerMatchService = $this->getSoccerMatchService();
-        $type = $request->get('type');
+        $type = $request->getType();
         $soccerMatchService->processByType($request, $type, $device);
     }
 
@@ -51,7 +42,6 @@ class SoccerMatchListener
     {
         /** @var SoccerMatchService $soccerMatchService */
         $soccerMatchService = $this->container->get('kicker_table.soccer_match_service');
-        $soccerMatchService->setEventsLog($this->lastEvent);
         return $soccerMatchService;
     }
 }

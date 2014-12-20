@@ -3,7 +3,7 @@
 namespace HH\ApiBundle\Event;
 
 use HH\ApiBundle\Entity\EventsLog;
-use Symfony\Component\EventDispatcher\Event as Event;
+use Symfony\Component\EventDispatcher\Event;
 
 class DeviceRequest extends Event
 {

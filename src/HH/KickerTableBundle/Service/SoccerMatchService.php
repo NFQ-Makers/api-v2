@@ -5,15 +5,12 @@ namespace HH\KickerTableBundle\Service;
 use Doctrine\ORM\EntityManager;
 use HH\ApiBundle\Entity\EventsLog;
 use HH\KickerTableBundle\Entity\SoccerMatch;
-use Symfony\Component\HttpFoundation\Request;
 
 class SoccerMatchService
 {
 
     /** @var EntityManager */
     private $entityManager;
-    /** @var EventsLog */
-    private $eventsLog;
 
     /**
      * @param EntityManager $manager
@@ -24,26 +21,18 @@ class SoccerMatchService
     }
 
     /**
-     * @param EventsLog $eventsLog
-     */
-    public function setEventsLog(EventsLog $eventsLog = null)
-    {
-        $this->eventsLog = $eventsLog;
-    }
-
-    /**
-     * @param Request $request
+     * @param EventsLog $request
      * @param string $type
      * @param string $device
      */
-    public function processByType(Request $request, $type, $device)
+    public function processByType(EventsLog $request, $type, $device)
     {
         $soccerEntity = new SoccerMatch();
-        $time = $request->get('time');
-        $data = $request->get('data');
+        $time = $request->getDeviceTime();
+        $data = $request->getData();
 
         $soccerEntity->setDeviceId($device)
-            ->setStartTime($time['sec']);
+            ->setStartTime($time);
         switch ($type) {
             case "TableShake" :
                 $this->TableShake($soccerEntity, $time);
@@ -58,7 +47,7 @@ class SoccerMatchService
                 return;
         }
         $soccerEntity->setDeviceId($device)
-            ->setStartTime($time['sec']);
+            ->setStartTime($time);
 
 
         //@todo: for debugging set all
