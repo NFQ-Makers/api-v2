@@ -1,0 +1,16 @@
+parameters:
+#    kicker_table.example.class: HH\KickerTableBundle\Example
+
+services:
+#    kicker_table.example:
+#        class: %kicker_table.example.class%
+#        arguments: [@service_id, "plain_value", %parameter%]
+    kicker_table.parse_request_data_listener:
+        class: HH\KickerTableBundle\EventListener\SoccerMatchListener
+        arguments: [ "@service_container" ]
+        tags:
+          - { name: kernel.event_listener, event: kernel.terminate, method: onTerminate }
+
+    kicker_table.soccer_match_service:
+        class: HH\KickerTableBundle\Service\SoccerMatchService
+        arguments: [ "@doctrine.orm.entity_manager" ]

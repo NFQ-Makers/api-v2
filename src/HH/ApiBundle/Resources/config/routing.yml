@@ -1,3 +1,9 @@
-api_root:
-    resource: "@ApiBundle/Controller"
-    type:     annotation
+api:
+    path:      /api/v2
+    defaults:  { _controller: ApiBundle:Api:index }
+    methods:  [GET]
+
+api_event:
+    path:      /api/v2/event
+    defaults:  { _controller: ApiBundle:Api:event }
+    methods:  [POST]

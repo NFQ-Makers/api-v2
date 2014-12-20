@@ -9,3 +9,9 @@ services:
     api.events_log_service:
         class: HH\ApiBundle\Service\EventsLogService
         arguments: [ "@doctrine.orm.entity_manager" ]
+
+    api.request_manager:
+        class: HH\ApiBundle\Service\RequestManager
+        arguments: [ "@doctrine.orm.entity_manager" ]
+        calls:
+          - [setDispatcher, [@event_dispatcher]]

@@ -17,8 +17,8 @@ class AppKernel extends Kernel
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
             new HH\ApiBundle\ApiBundle(),
-            new HH\IceCreamBundle\IceCreamBundle(),
-            new HH\SoccerMatchBundle\SoccerMatchBundle(),
+            new HH\IceKioskBundle\IceKioskBundle(),
+            new HH\KickerTableBundle\KickerTableBundle(),
             new HH\UserBundle\UserBundle(),
         );
 

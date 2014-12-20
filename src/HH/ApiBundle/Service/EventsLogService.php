@@ -21,14 +21,6 @@ class EventsLogService
     }
 
     /**
-     * @param EventsLog $lastEvent
-     */
-    public function setLastEvent(EventsLog $lastEvent)
-    {
-        $this->lastEvent = $lastEvent;
-    }
-
-    /**
      * @return EventsLog
      */
     public function getLastEvent()
