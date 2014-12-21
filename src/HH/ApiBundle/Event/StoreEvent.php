@@ -13,5 +13,6 @@ use Symfony\Component\EventDispatcher\Event;
 
 class StoreEvent extends Event
 {
-    const STORE_REQUEST_EVENT = 'api.store_request_event';
+    const SET_STORE_REQUEST_EVENT = 'api.set_store_request_event';
+    const GET_STORE_REQUEST_EVENT = 'api.get_store_request_event';
 }

@@ -13,8 +13,8 @@ services:
     api.store_request:
         class: HH\ApiBundle\EventListener\StoreEventListener
         tags:
-            - { name: api.set_request_event_listener, event: api.store_request_event, method: setRequestEvent }
-            - { name: api.get_request_event_listener, event: api.store_request_event, method: getRequestEvent }
+            - { name: kernel.event_listener, event: api.set_store_request_event, method: setRequestEvent }
+            - { name: kernel.event_listener, event: api.get_store_request_event, method: getRequestEvent }
 
     api.post_request_terminate:
         class: %api.post_request_terminate.class%

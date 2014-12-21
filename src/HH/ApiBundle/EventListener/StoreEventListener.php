@@ -19,7 +19,7 @@ class StoreEventListener
     /**
      * @param DeviceRequest $event
      */
-    public function setRequestEvent($event)
+    public function setRequestEvent(DeviceRequest $event)
     {
         $this->event = $event;
     }

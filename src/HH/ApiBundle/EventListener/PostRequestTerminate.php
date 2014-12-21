@@ -3,6 +3,7 @@
 namespace HH\ApiBundle\EventListener;
 
 use HH\ApiBundle\Event\DeviceRequest;
+use HH\ApiBundle\Event\StoreEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpKernel\Event\PostResponseEvent;
 
@@ -33,7 +34,7 @@ class PostRequestTerminate
      */
     private function getSavedRequestEvent()
     {
-        return $this->dispatcher->dispatch('api.get_request_event_listener');
+        return $this->dispatcher->dispatch(StoreEvent::GET_STORE_REQUEST_EVENT);
     }
 
     /**

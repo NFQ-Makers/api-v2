@@ -51,7 +51,7 @@ class RequestManager
 
         $deviceRequestEvent = new DeviceRequest();
         $deviceRequestEvent->setLog($eventEntity);
-        $this->dispatcher->dispatch(StoreEvent::STORE_REQUEST_EVENT, $deviceRequestEvent);
+        $this->dispatcher->dispatch(StoreEvent::SET_STORE_REQUEST_EVENT, $deviceRequestEvent);
 
         return array("status" => "ok");
     }
