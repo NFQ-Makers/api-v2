@@ -33,7 +33,7 @@ class PostRequestTerminate
      */
     private function getSavedRequestEvent()
     {
-        return $this->dispatcher->dispatch('api.get_request_event');
+        return $this->dispatcher->dispatch('api.get_request_event_listener');
     }
 
     /**

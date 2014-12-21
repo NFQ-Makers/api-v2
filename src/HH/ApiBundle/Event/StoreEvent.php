@@ -9,8 +9,9 @@
 
 namespace HH\ApiBundle\Event;
 
+use Symfony\Component\EventDispatcher\Event;
 
-class StoreEvents
+class StoreEvent extends Event
 {
-    const STORE_REQUEST_EVENT = 'api.store_request_subscriber';
-} 
+    const STORE_REQUEST_EVENT = 'api.store_request_event';
+}

@@ -11,9 +11,10 @@ services:
         arguments: [ "@doctrine.orm.entity_manager" ]
 
     api.store_request:
-        class: HH\ApiBundle\EventListener\StoreEventSubscriber
+        class: HH\ApiBundle\EventListener\StoreEventListener
         tags:
-            - { name: api.store_request_subscriber, event: api.store_request_event, method: setRequestEvent }
+            - { name: api.set_request_event_listener, event: api.store_request_event, method: setRequestEvent }
+            - { name: api.get_request_event_listener, event: api.store_request_event, method: getRequestEvent }
 
     api.post_request_terminate:
         class: %api.post_request_terminate.class%

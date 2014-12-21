@@ -5,7 +5,7 @@ namespace HH\ApiBundle\Service;
 use Doctrine\ORM\EntityManager;
 use HH\ApiBundle\Entity\EventsLog;
 use HH\ApiBundle\Event\DeviceRequest;
-use HH\ApiBundle\Event\StoreEvents;
+use HH\ApiBundle\Event\StoreEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -51,7 +51,7 @@ class RequestManager
 
         $deviceRequestEvent = new DeviceRequest();
         $deviceRequestEvent->setLog($eventEntity);
-        $this->dispatcher->dispatch(StoreEvents::STORE_REQUEST_EVENT, $deviceRequestEvent);
+        $this->dispatcher->dispatch(StoreEvent::STORE_REQUEST_EVENT, $deviceRequestEvent);
 
         return array("status" => "ok");
     }
