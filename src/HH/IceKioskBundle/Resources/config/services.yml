@@ -10,7 +10,7 @@ services:
         calls:
             - [setIceCreamService, [@ice_kiosk.ice_cream_service]]
         tags:
-            - { name: kernel.event_listener, event: kernel.terminate, method: onTerminate }
+            - { name: kernel.event_listener, event: api.post_request_terminate, method: onTerminate }
 
     ice_kiosk.ice_cream_service:
         class: HH\IceKioskBundle\Service\IceCreamService

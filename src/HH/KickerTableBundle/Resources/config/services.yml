@@ -9,7 +9,7 @@ services:
         class: HH\KickerTableBundle\EventListener\SoccerMatchListener
         arguments: [ "@service_container" ]
         tags:
-          - { name: kernel.event_listener, event: kernel.terminate, method: onTerminate }
+            - { name: kernel.event_listener, event: api.post_request_terminate, method: onTerminate }
 
     kicker_table.soccer_match_service:
         class: HH\KickerTableBundle\Service\SoccerMatchService
