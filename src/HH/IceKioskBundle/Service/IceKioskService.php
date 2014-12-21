@@ -6,8 +6,9 @@ use Doctrine\ORM\EntityManager;
 use HH\ApiBundle\Entity\EventsLog;
 use HH\IceKioskBundle\Entity\IceCream;
 
-class IceCreamService
+class IceKioskService
 {
+    const DEVICE_ID = 'iceCream_1';
 
     /** @var EntityManager */
     private $entityManager;

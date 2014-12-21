@@ -2,46 +2,29 @@
 
 namespace HH\IceKioskBundle\EventListener;
 
-use HH\ApiBundle\Event\DeviceRequest;
-use HH\ApiBundle\EventListener\ApiTerminateInterface;
-use HH\IceKioskBundle\Service\IceCreamService;
-use Symfony\Component\DependencyInjection\Container;
+use HH\ApiBundle\Event\DeviceMessageEvent;
+use HH\ApiBundle\EventListener\DeviceMessageEventListenerInterface;
+use HH\IceKioskBundle\Service\IceKioskService;
 
-class IceKioskListener implements ApiTerminateInterface
+class IceKioskListener implements DeviceMessageEventListenerInterface
 {
-    /** @var Container */
-    private $container;
-
     /**
-     * @param Container $container
+     * @param DeviceMessageEvent $event
      */
-    public function __construct(Container $container)
+    public function processMessage(DeviceMessageEvent $event)
     {
-        $this->container = $container;
-    }
-
-    /**
-     * @param DeviceRequest $event
-     */
-    public function onTerminate(DeviceRequest $event)
-    {
-        $request = $event->getLog();
-        $device = $request->getDeviceId();
-        if ($device !== 'iceCream_1') {
+        if ($event->getDeviceId() !== IceKioskService::DEVICE_ID) {
             return;
         }
-        $iceCreamService = $this->getIceCreamService();
-        $type = $request->getType();
-        $iceCreamService->processIceCream($request, $type, $device);
-    }
+        $event->setProcessed();
 
-    /**
-     * @return IceCreamService
-     */
-    private function getIceCreamService()
-    {
-        /** @var IceCreamService $iceCreamService */
-        $iceCreamService = $this->container->get('ice_kiosk.ice_cream_service');
-        return $iceCreamService;
+//        $request = $event->getLog();
+//        $device = $request->getDeviceId();
+//        if ($device !== 'iceCream_1') {
+//            return;
+//        }
+//        $iceCreamService = $this->getIceCreamService();
+//        $type = $request->getType();
+//        $iceCreamService->processIceCream($request, $type, $device);
     }
 }

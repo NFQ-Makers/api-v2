@@ -2,23 +2,29 @@
 
 namespace HH\ApiBundle\EventListener;
 
-use HH\ApiBundle\Event\DeviceRequest;
-use HH\ApiBundle\Event\StoreEvent;
+use HH\ApiBundle\Event\DeviceMessageEvent;
+use HH\ApiBundle\Service\MessageManager;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\HttpKernel\Event\PostResponseEvent;
 
 class PostRequestTerminate
 {
     /** @var EventDispatcherInterface */
     private $dispatcher;
 
+    /** @var MessageManager */
+    protected $messageManager;
+
     /**
-     * @param PostResponseEvent $postResponseEvent
+     * Method will be executed after response will be send to user
      */
-    public function onTerminate(PostResponseEvent $postResponseEvent)
+    public function onTerminate()
     {
-        $event = $this->getSavedRequestEvent();
-        $this->publishApiTerminate($event);
+        $deviceMessageEvent = $this->messageManager->getDeviceMessageEvent();
+
+        $this->dispatcher->dispatch(DeviceMessageEvent::NEW_DEVICE_MESSAGE_EVENT, $deviceMessageEvent);
+        if ($deviceMessageEvent->isProcessed()) {
+            $this->messageManager->setProcessed();
+        }
     }
 
     /**
@@ -30,19 +36,10 @@ class PostRequestTerminate
     }
 
     /**
-     * @return DeviceRequest
+     * @param MessageManager $messageManager
      */
-    private function getSavedRequestEvent()
+    public function setMessageManager($messageManager)
     {
-        return $this->dispatcher->dispatch(StoreEvent::GET_STORE_REQUEST_EVENT);
+        $this->messageManager = $messageManager;
     }
-
-    /**
-     * @param $event
-     */
-    private function publishApiTerminate($event)
-    {
-        $this->dispatcher->dispatch('api.post_request_terminate', $event);
-    }
-
 }

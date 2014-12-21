@@ -1,30 +1,16 @@
 parameters:
-#    api.example.class: HH\ApiBundle\Example
     api.post_request_terminate.class: HH\ApiBundle\EventListener\PostRequestTerminate
+
 services:
-#    api.example:
-#        class: %api.example.class%
-#        arguments: [@service_id, "plain_value", %parameter%]
-
-    api.events_log_service:
-        class: HH\ApiBundle\Service\EventsLogService
-        arguments: [ "@doctrine.orm.entity_manager" ]
-
-    api.store_request:
-        class: HH\ApiBundle\EventListener\StoreEventListener
-        tags:
-            - { name: kernel.event_listener, event: api.set_store_request_event, method: setRequestEvent }
-            - { name: kernel.event_listener, event: api.get_store_request_event, method: getRequestEvent }
-
     api.post_request_terminate:
         class: %api.post_request_terminate.class%
         calls:
             - [ setDispatcher, [@event_dispatcher] ]
+            - [ setMessageManager, [@api.message_manager]]
         tags:
             - { name: kernel.event_listener, event: kernel.terminate, method: onTerminate }
 
-    api.request_manager:
-        class: HH\ApiBundle\Service\RequestManager
-        arguments: [ "@doctrine.orm.entity_manager" ]
-        calls:
-            - [ setDispatcher, [@event_dispatcher] ]
+    api.message_manager:
+        class: HH\ApiBundle\Service\MessageManager
+        arguments:
+            - @doctrine

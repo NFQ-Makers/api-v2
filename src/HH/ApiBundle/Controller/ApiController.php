@@ -2,7 +2,7 @@
 
 namespace HH\ApiBundle\Controller;
 
-use HH\ApiBundle\Service\RequestManager;
+use HH\ApiBundle\Service\MessageManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -12,6 +12,7 @@ class ApiController extends Controller
 {
     /**
      * @param Request $request
+     *
      * @return JsonResponse
      */
     public function indexAction(Request $request)
@@ -30,17 +31,18 @@ class ApiController extends Controller
     /**
      *
      * @param Request $request
+     *
      * @return JsonResponse
      */
     public function eventAction(Request $request)
     {
-        if (!$data = $request->request->all()) {
+        if (!$request->request->all()) {
             return new JsonResponse(array("status" => "error", "message" => "bad request"), 400);
         }
         $timestamp = new DateTime('now');
 
-        /** @var RequestManager $manager */
-        $manager = $this->container->get('api.request_manager');
+        /** @var MessageManager $manager */
+        $manager = $this->container->get('api.message_manager');
         $result = $manager->processRequest($request, $timestamp);
 
         $headers = array("X-TableEventStored" => "1");
