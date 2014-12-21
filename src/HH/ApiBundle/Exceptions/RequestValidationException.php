@@ -8,7 +8,7 @@
  */
 namespace HH\ApiBundle\Exceptions;
 
-use \Exception as Exception;
+use Exception as Exception;
 
 /**
  * Class RequestValidationException
@@ -16,13 +16,9 @@ use \Exception as Exception;
  */
 class RequestValidationException extends Exception
 {
-    /** @var int */
     const ERROR_DEVICE_ID = -1;
-    /** @var int */
     const ERROR_REQUEST_TYPE = -2;
-    /** @var int */
     const ERROR_DATE = -3;
-    /** @var int */
     const ERROR_DATA = -4;
 
     /**
@@ -32,5 +28,30 @@ class RequestValidationException extends Exception
     public function __construct($message = "", $code = 0)
     {
         parent::__construct($message, $code);
+    }
+
+    /**
+     * @param int $errorCode
+     * @return array
+     */
+    public function resolveRequestError($errorCode)
+    {
+        $errors = array();
+        switch ($errorCode) {
+            // @todo: sprintf, move to translations
+            case RequestValidationException::ERROR_DEVICE_ID :
+                $errors['ERROR_DEVICE_ID'] = 'Requested device id error';
+                break;
+            case RequestValidationException::ERROR_REQUEST_TYPE :
+                $errors['ERROR_REQUEST_TYPE'] = 'Requested type error';
+                break;
+            case RequestValidationException::ERROR_DATE :
+                $errors['ERROR_DATE'] = 'Requested date error';
+                break;
+            case RequestValidationException::ERROR_DATA :
+                $errors['ERROR_DATA'] = 'Requested data error';
+                break;
+        }
+        return $errors;
     }
 } 

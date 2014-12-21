@@ -8,6 +8,17 @@ use HH\IceKioskBundle\Service\IceKioskService;
 
 class IceKioskListener implements DeviceMessageEventListenerInterface
 {
+    /** @var IceKioskService */
+    private $iceKioskService;
+
+    /**
+     * @param IceKioskService $iceKioskService
+     */
+    public function __construct(IceKioskService $iceKioskService)
+    {
+        $this->iceKioskService = $iceKioskService;
+    }
+
     /**
      * @param DeviceMessageEvent $event
      */
@@ -16,15 +27,9 @@ class IceKioskListener implements DeviceMessageEventListenerInterface
         if ($event->getDeviceId() !== IceKioskService::DEVICE_ID) {
             return;
         }
-        $event->setProcessed();
 
-//        $request = $event->getLog();
-//        $device = $request->getDeviceId();
-//        if ($device !== 'iceCream_1') {
-//            return;
-//        }
-//        $iceCreamService = $this->getIceCreamService();
-//        $type = $request->getType();
-//        $iceCreamService->processIceCream($request, $type, $device);
+        $this->iceKioskService->processIceCream($event);
+        $event->setProcessed();
     }
+
 }

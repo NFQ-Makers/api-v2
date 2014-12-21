@@ -1,5 +1,5 @@
 parameters:
-#    ice_cream.example.class: HH\IceKioskBundle\Example
+#    ice_kiosk.example.class: HH\IceKioskBundle\Example
 
 services:
 #    ice_kiosk.example:
@@ -7,6 +7,7 @@ services:
 #        arguments: [@service_id, "plain_value", %parameter%]
     ice_kiosk.parse_request_data_listener:
         class: HH\IceKioskBundle\EventListener\IceKioskListener
+        arguments: [ @ice_kiosk.ice_kiosk_service ]
         tags:
             - { name: kernel.event_listener, event: api.new_device_message_appear, method: processMessage }
 

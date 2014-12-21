@@ -3,11 +3,12 @@
 namespace HH\KickerTableBundle\Service;
 
 use Doctrine\ORM\EntityManager;
-use HH\ApiBundle\Entity\EventsLog;
+use HH\ApiBundle\Event\DeviceMessageEvent;
 use HH\KickerTableBundle\Entity\SoccerMatch;
 
-class SoccerMatchService
+class KickerTableService
 {
+    const DEVICE_ID = 'table_1';
 
     /** @var EntityManager */
     private $entityManager;
@@ -21,13 +22,13 @@ class SoccerMatchService
     }
 
     /**
-     * @param EventsLog $request
-     * @param string $type
-     * @param string $device
+     * @param DeviceMessageEvent $request
      */
-    public function processByType(EventsLog $request, $type, $device)
+    public function processByType(DeviceMessageEvent $request)
     {
         $soccerEntity = new SoccerMatch();
+        $type = $request->getType();
+        $device = $request->getDeviceId();
         $time = $request->getDeviceTime();
         $data = $request->getData();
 

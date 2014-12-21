@@ -2,6 +2,7 @@
 
 namespace HH\ApiBundle\Event;
 
+use Datetime as Datetime;
 use Symfony\Component\EventDispatcher\Event;
 
 class DeviceMessageEvent extends Event
@@ -11,7 +12,7 @@ class DeviceMessageEvent extends Event
     /** @var bool */
     private $processed = false;
 
-    /** @var int */
+    /** @var Datetime */
     private $deviceTime;
 
     /** @var string */
@@ -24,14 +25,6 @@ class DeviceMessageEvent extends Event
     private $data;
 
     /**
-     * Mark event as processed
-     */
-    public function setProcessed()
-    {
-        $this->processed = true;
-    }
-
-    /**
      * @return bool
      */
     public function isProcessed()
@@ -40,7 +33,17 @@ class DeviceMessageEvent extends Event
     }
 
     /**
-     * @return int
+     * Mark event as processed
+     * @return $this
+     */
+    public function setProcessed()
+    {
+        $this->processed = true;
+        return $this;
+    }
+
+    /**
+     * @return Datetime
      */
     public function getDeviceTime()
     {
@@ -48,11 +51,11 @@ class DeviceMessageEvent extends Event
     }
 
     /**
-     * @param int $deviceTime
+     * @param Datetime $deviceTime
      *
      * @return $this
      */
-    public function setDeviceTime($deviceTime)
+    public function setDeviceTime(DateTime $deviceTime)
     {
         $this->deviceTime = $deviceTime;
         return $this;
@@ -109,7 +112,7 @@ class DeviceMessageEvent extends Event
      *
      * @return $this
      */
-    public function setData($data)
+    public function setData(array $data)
     {
         $this->data = $data;
         return $this;

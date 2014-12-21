@@ -5,13 +5,11 @@ namespace HH\ApiBundle\Service;
 use Doctrine\ORM\EntityManager;
 use HH\ApiBundle\Entity\EventsLog;
 use HH\ApiBundle\Event\DeviceMessageEvent;
-use HH\ApiBundle\Event\DeviceRequest;
-use HH\ApiBundle\Event\StoreEvent;
 use HH\ApiBundle\Exceptions\RequestValidationException;
 use HH\ApiBundle\Validators\RequestValidator;
 use Symfony\Bridge\Doctrine\ManagerRegistry;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\ParameterBag;
 
 class MessageManager
 {
@@ -33,17 +31,19 @@ class MessageManager
     }
 
     /**
-     * @param Request $request
+     * @param ParameterBag $request
      * @param $timestamp
      * @return array
      */
-    public function processRequest(Request $request, $timestamp)
+    public function processRequest(ParameterBag $request, $timestamp)
     {
         $this->message = new EventsLog();
         try {
             $this->parseFromRequest($request);
-        } catch (RequestValidationException $e) {
-            return array("status" => "fail");
+        } catch (RequestValidationException $exception) {
+            // @todo: log error
+            $msg = $exception->resolveRequestError($exception->getCode());
+            return array("status" => "error", "message" => "invalid data");
         }
 
         $this->message->setTimestamp($timestamp);
@@ -52,25 +52,34 @@ class MessageManager
         return array("status" => "ok");
     }
 
+    /**
+     * @param ParameterBag $request
+     */
+    private function parseFromRequest(ParameterBag $request)
+    {
+        $time = $request->get('time');
+        $deviceId = $request->get('deviceId');
+        $type = $request->get('type');
+        $data = $request->get('data', array());
+
+        $requestValidator = new RequestValidator();
+        $requestValidator->validateTime($time);
+        $requestValidator->validateDeviceId($deviceId);
+        $requestValidator->validateType($type);
+        $requestValidator->validateData($data);
+
+        $this->message->setDeviceId($deviceId)
+            ->setData($data)
+            ->setDeviceTime($time['sec'])
+            ->setProcessed(false)
+            ->setType($type);
+    }
+
     public function saveMessage()
     {
         $this->initEntityManager();
         $this->entityManager->persist($this->message);
         $this->entityManager->flush();
-    }
-
-    /**
-     * @return DeviceMessageEvent
-     */
-    public function getDeviceMessageEvent()
-    {
-        $event = new DeviceMessageEvent();
-        $event->setDeviceTime($this->message->getDeviceTime())
-            ->setDeviceId($this->message->getDeviceId())
-            ->setType($this->message->getType())
-            ->setData($this->message->getData());
-
-        return $event;
     }
 
     /**
@@ -84,27 +93,17 @@ class MessageManager
     }
 
     /**
-     * @param Request $request
+     * @return DeviceMessageEvent
      */
-    private function parseFromRequest(Request $request)
+    public function getDeviceMessageEvent()
     {
-        $time = $request->get('time');
-        $deviceId = $request->get('deviceId');
-        $type = $request->get('type');
-        $data = $request->get('data');
+        $event = new DeviceMessageEvent();
+        $event->setDeviceTime($this->message->getTimestamp())
+            ->setDeviceId($this->message->getDeviceId())
+            ->setType($this->message->getType())
+            ->setData($this->message->getData());
 
-        $requestValidator = new RequestValidator();
-        $requestValidator->validateTime($time);
-        $requestValidator->validateDeviceId($deviceId);
-        $requestValidator->validateType($type);
-        $requestValidator->validateData($data);
-
-        //@todo: set processed on kernel.terminate
-        $this->message->setDeviceId($deviceId)
-            ->setData($data)
-            ->setDeviceTime($time['sec'])
-            ->setProcessed(false)
-            ->setType($type);
+        return $event;
     }
 
     public function setProcessed()

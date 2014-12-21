@@ -172,7 +172,7 @@ class EventsLog
     /**
      * Get data
      *
-     * @return string
+     * @return array
      */
     public function getData()
     {

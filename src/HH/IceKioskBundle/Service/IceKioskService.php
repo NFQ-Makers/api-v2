@@ -3,7 +3,7 @@
 namespace HH\IceKioskBundle\Service;
 
 use Doctrine\ORM\EntityManager;
-use HH\ApiBundle\Entity\EventsLog;
+use HH\ApiBundle\Event\DeviceMessageEvent;
 use HH\IceKioskBundle\Entity\IceCream;
 
 class IceKioskService
@@ -22,12 +22,12 @@ class IceKioskService
     }
 
     /**
-     * @param EventsLog $request
-     * @param string $type
-     * @param string $device
+     * @param DeviceMessageEvent $request
      */
-    public function processIceCream(EventsLog $request, $type, $device)
+    public function processIceCream(DeviceMessageEvent $request)
     {
+        $type = $request->getType();
+        $device = $request->getDeviceId();
         $data = $request->getData();
 
         $iceCreamEntity = new IceCream();
@@ -48,7 +48,6 @@ class IceKioskService
         $em->persist($iceCreamEntity);
         $em->flush();
         // @todo: here can be dispatched user event, recalculate amount
-        // @todo: dispatch mark as processed
 //        /** @var EventsLogService $eventService */
 //        $eventService = $this->get('api.events_log_service');
 //        $eventService->markAsProcessed();
@@ -57,12 +56,12 @@ class IceKioskService
 // {"time":{"sec":1398619851,"usec":844563},"deviceId":"iceCream_1","type":"IceCream","data":{"userId":123,"amount":3}}
     /**
      * @param IceCream $iceCreamEntity
-     * @param EventsLog $eventsLog
+     * @param DeviceMessageEvent $eventsLog
      * @param $data
      */
-    public function IceCream(IceCream $iceCreamEntity, EventsLog $eventsLog, $data)
+    public function IceCream(IceCream $iceCreamEntity, DeviceMessageEvent $eventsLog, $data)
     {
-        $timestamp = $eventsLog->getTimestamp();
+        $timestamp = $eventsLog->getDeviceTime();
         $iceCreamEntity->setTimestamp($timestamp);
         $iceCreamEntity->setAmount($data['amount'])
             ->setUserId($data['userId']);

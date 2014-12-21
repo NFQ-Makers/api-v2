@@ -6,11 +6,11 @@ services:
 #        class: %kicker_table.example.class%
 #        arguments: [@service_id, "plain_value", %parameter%]
     kicker_table.parse_request_data_listener:
-        class: HH\KickerTableBundle\EventListener\SoccerMatchListener
-        arguments: [ "@service_container" ]
+        class: HH\KickerTableBundle\EventListener\KickerTableListener
+        arguments: [ @kicker_table.kicker_table_service ]
         tags:
-            - { name: kernel.event_listener, event: api.post_request_terminate, method: onTerminate }
+            - { name: kernel.event_listener, event: api.new_device_message_appear, method: processMessage }
 
-    kicker_table.soccer_match_service:
-        class: HH\KickerTableBundle\Service\SoccerMatchService
+    kicker_table.kicker_table_service:
+        class: HH\KickerTableBundle\Service\KickerTableService
         arguments: [ "@doctrine.orm.entity_manager" ]

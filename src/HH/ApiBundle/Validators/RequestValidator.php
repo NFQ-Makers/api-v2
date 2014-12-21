@@ -17,17 +17,9 @@ use HH\ApiBundle\Exceptions\RequestValidationException;
  */
 class RequestValidator
 {
-
-    /** @var RequestValidationException[] */
-
-    private $errors = array();
-    /** @var string */
     const REQUEST_TYPE_TABLE_SHAKE = 'TableShake';
-    /** @var string */
     const REQUEST_TYPE_AUTO_GOAL = 'AutoGoal';
-    /** @var string */
     const REQUEST_TYPE_CARD_SWIPE = 'CardSwipe';
-    /** @var string */
     const REQUEST_TYPE_ICE_CREAM = 'IceCream';
 
     /**
@@ -89,37 +81,14 @@ class RequestValidator
 
     /**
      * @param $data
+     * @return bool
+     * @throws RequestValidationException
      */
     public function validateData($data)
     {
-    }
-
-    /**
-     * @return array
-     */
-    public function resolveRequestError()
-    {
-        $errors = array();
-        if (count($this->errors) == 0) {
-            return $errors;
+        if (!is_array($data)) {
+            throw new RequestValidationException('', RequestValidationException::ERROR_DATA);
         }
-        foreach ($this->errors as $error) {
-            switch ($error->getCode()) {
-                // @todo: sprintf, move to translations
-                case RequestValidationException::ERROR_DEVICE_ID :
-                    $errors['ERROR_DEVICE_ID'] = 'Requested device id error';
-                    break;
-                case RequestValidationException::ERROR_REQUEST_TYPE :
-                    $errors['ERROR_REQUEST_TYPE'] = 'Requested type error';
-                    break;
-                case RequestValidationException::ERROR_DATE :
-                    $errors['ERROR_DATE'] = 'Requested date error';
-                    break;
-                case RequestValidationException::ERROR_DATA :
-                    $errors['ERROR_DATA'] = 'Requested data error';
-                    break;
-            }
-        }
-        return $errors;
+        return true;
     }
 } 

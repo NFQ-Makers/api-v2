@@ -8,11 +8,10 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class PostRequestTerminate
 {
-    /** @var EventDispatcherInterface */
-    private $dispatcher;
-
     /** @var MessageManager */
     protected $messageManager;
+    /** @var EventDispatcherInterface */
+    private $dispatcher;
 
     /**
      * Method will be executed after response will be send to user

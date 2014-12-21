@@ -2,11 +2,11 @@
 
 namespace HH\ApiBundle\Controller;
 
+use DateTime as DateTime;
 use HH\ApiBundle\Service\MessageManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use \DateTime as DateTime;
 
 class ApiController extends Controller
 {
@@ -43,7 +43,7 @@ class ApiController extends Controller
 
         /** @var MessageManager $manager */
         $manager = $this->container->get('api.message_manager');
-        $result = $manager->processRequest($request, $timestamp);
+        $result = $manager->processRequest($request->request, $timestamp);
 
         $headers = array("X-TableEventStored" => "1");
         return new JsonResponse($result, 200, $headers);
