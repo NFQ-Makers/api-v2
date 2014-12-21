@@ -6,12 +6,10 @@ services:
 #        class: %ice_kiosk.example.class%
 #        arguments: [@service_id, "plain_value", %parameter%]
     ice_kiosk.parse_request_data_listener:
-        class: HH\IceKioskBundle\EventListener\IceCreamListener
-        calls:
-            - [setIceCreamService, [@ice_kiosk.ice_cream_service]]
+        class: HH\IceKioskBundle\EventListener\IceKioskListener
         tags:
-            - { name: kernel.event_listener, event: api.post_request_terminate, method: onTerminate }
+            - { name: kernel.event_listener, event: api.new_device_message_appear, method: processMessage }
 
-    ice_kiosk.ice_cream_service:
-        class: HH\IceKioskBundle\Service\IceCreamService
+    ice_kiosk.ice_kiosk_service:
+        class: HH\IceKioskBundle\Service\IceKioskService
         arguments: [ "@doctrine.orm.entity_manager" ]
